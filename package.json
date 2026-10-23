@@ -1,0 +1,54 @@
+{
+  "name": "biochem-practice",
+  "version": "1.4.0",
+  "description": "生物化学练习室",
+  "author": "Biochem Classroom",
+  "main": "native/windows/main.cjs",
+  "private": true,
+  "scripts": {
+    "test": "node tools/test.cjs",
+    "build:win": "electron-builder --win nsis --x64 --publish never"
+  },
+  "devDependencies": {
+    "electron": "^42.0.0",
+    "electron-builder": "^26.0.12"
+  },
+  "build": {
+    "appId": "cn.edu.biochem.practice",
+    "productName": "生化练习室",
+    "directories": {
+      "output": "release/windows"
+    },
+    "files": [
+      "dist/**/*",
+      "native/windows/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "signAndEditExecutable": false,
+      "artifactName": "Biochem-Practice-Setup-${version}-x64.exe"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "perMachine": false,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "installerLanguages": [
+        "zh_CN",
+        "en_US"
+      ]
+    }
+  },
+  "dependencies": {
+    "fflate": "^0.8.3"
+  }
+}
