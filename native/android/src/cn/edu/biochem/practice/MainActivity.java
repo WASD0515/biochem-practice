@@ -39,6 +39,12 @@ public class MainActivity extends Activity {
   web.loadUrl(ORIGIN+"/index.html");
  }
  public class ExportBridge{
+  @JavascriptInterface public boolean openExternal(String value){
+   try{Uri uri=Uri.parse(value);String path=uri.getPath(),prefix="/WASD0515/biochem-practice/releases";
+    if(!"https".equals(uri.getScheme())||!"github.com".equals(uri.getHost())||uri.getUserInfo()!=null||uri.getPort()!=-1||path==null||!(path.equals(prefix)||path.startsWith(prefix+"/")))return false;
+    runOnUiThread(()->{try{startActivity(new Intent(Intent.ACTION_VIEW,uri));}catch(Exception e){Toast.makeText(MainActivity.this,"未找到浏览器，请手动访问GitHub项目下载页",Toast.LENGTH_LONG).show();}});return true;
+   }catch(Exception e){return false;}
+  }
   @JavascriptInterface public void saveFile(String name,String mime,String content){
    if(content==null||content.length()>20000000)return;
    runOnUiThread(()->{if(pendingExport!=null){Toast.makeText(MainActivity.this,"请先完成当前文件保存",Toast.LENGTH_SHORT).show();return;}pendingExport=content;
