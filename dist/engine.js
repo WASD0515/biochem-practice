@@ -17,6 +17,11 @@ function topicList(state){return [...TOPICS,...new Set(['其他章节',...(state
 function migrate(saved){
  const base=empty(),state={...base,...saved,settings:{...base.settings,...saved?.settings}};
  state.reviewRecords=state.reviewRecords&&typeof state.reviewRecords==='object'?state.reviewRecords:{};
+ state.settings.includeReviewStats=state.settings.includeReviewStats===true;
+ // Recover earliest historical self-ratings without treating retries as new samples.
+ const earliest=new Map();
+ for(const event of state.history||[])if(event.review&&validRatio(event.ratio)&&(!earliest.has(event.id)||event.at<earliest.get(event.id).at))earliest.set(event.id,event);
+ for(const [id,record] of Object.entries(state.reviewRecords))if(!validRatio(record.first)&&earliest.has(id))record.first=earliest.get(id).ratio;
  if(state.settings.preset==='midterm')state.settings.preset='regular';
  const oldGrad=[{type:'definition',count:6,points:5},{type:'fill',count:10,points:2},{type:'single',count:10,points:2},{type:'judge',count:10,points:1},{type:'short',count:3,points:10},{type:'essay',count:2,points:20}];
  if(state.settings.preset==='graduate'&&JSON.stringify(state.settings.plan)===JSON.stringify(oldGrad))state.settings.plan=GRADUATE_PLAN.map(r=>({...r}));
@@ -55,6 +60,25 @@ function questionPool(bank,state,options={}){
 }
 function selectedTopics(bank,state){return state.settings.scopeExplicit?[...state.settings.examTopics]:topicList(state).filter(t=>bank.some(q=>q.topic===t));}
 function practiceRecord(state,q){return q.status==='review'?(state.reviewRecords||{})[q.id]:state.records[q.id];}
+function validRatio(value){return typeof value==='number'&&Number.isFinite(value)&&value>=0&&value<=1;}
+function assessmentPool(bank,state){
+ const scope=new Set(selectedTopics(bank,state));
+ return bank.filter(q=>scope.has(q.topic)&&(q.status==='active'&&objective(q)||state.settings.includeReviewStats===true&&q.status==='review'));
+}
+function assessmentStats(bank,state){
+ const pool=assessmentPool(bank,state),samples=pool.flatMap(q=>{const record=practiceRecord(state,q);return validRatio(record?.first)?[{q,record,first:record.first,review:q.status==='review'}]:[];});
+ const reviewN=samples.filter(s=>s.review).length,sum=samples.reduce((n,s)=>n+s.first,0);
+ return {pool,samples,n:samples.length,safeN:samples.length-reviewN,reviewN,accuracy:samples.length?Math.round(sum/samples.length*100):null,includeReview:state.settings.includeReviewStats===true};
+}
+function reviseSelfScore(state,q,ratio){
+ if(!validRatio(ratio))throw Error('自评分须为0到1');
+ const record=practiceRecord(state,q);if(!record)return;
+ record.ratio=ratio;
+ const events=state.history.filter(e=>e.id===q.id&&!!e.review===(q.status==='review'));
+ if(events.length)events[events.length-1].ratio=ratio;
+ if(q.status==='review'&&record.attempts===1)record.first=ratio;
+ if(events.length===record.attempts){record.errors=0;record.streak=0;record.wrong=false;for(const event of events){if(event.ratio<1){record.errors++;record.streak=0;record.wrong=true;}else{record.streak++;if(record.streak>=2)record.wrong=false;}}}
+}
 function metrics(bank,state,now=new Date()){
  const pool=questionPool(bank,state),ids=new Map(pool.map(q=>[q.id,q])),today=localDate(now);
  const events=state.history.filter(r=>{const q=ids.get(r.id);return q&&practiceRecord(state,q)&&!!r.review===(q.status==='review');}),firstTimes=new Map();
@@ -83,9 +107,9 @@ function grade(q,a){
  if(!objective(q))return null;
  return JSON.stringify([...(a||[])].sort())===JSON.stringify([...q.answer].sort())?1:0;
 }
-function empty(){return {schema:1,seedEnabled:true,deletedIds:[],chapters:['其他章节'],records:{},reviewRecords:{},history:[],favorites:[],custom:[],overrides:{},exam:null,practice:null,lastPractice:null,settings:{includeReview:false,examDate:'',dailyMode:'auto',dailyTarget:20,minutes:90,pass:60,total:100,examTopics:[],scopeExplicit:false,preset:'regular',folderAuto:true,subjective:60,plan:DEFAULT_PLAN.map(r=>({...r})),remote:''}};}
+function empty(){return {schema:1,seedEnabled:true,deletedIds:[],chapters:['其他章节'],records:{},reviewRecords:{},history:[],favorites:[],custom:[],overrides:{},exam:null,practice:null,lastPractice:null,settings:{includeReview:false,includeReviewStats:false,autoCheckUpdates:true,examDate:'',dailyMode:'auto',dailyTarget:20,minutes:90,pass:60,total:100,examTopics:[],scopeExplicit:false,preset:'regular',folderAuto:true,subjective:60,plan:DEFAULT_PLAN.map(r=>({...r})),remote:''}};}
 function record(state,q,ratio,self=false){
- if(q.status==='review'){state.reviewRecords||={};const old=state.reviewRecords[q.id]||{attempts:0,firstAt:Date.now(),wrong:false,streak:0,errors:0};old.attempts++;old.last=Date.now();old.ratio=ratio;old.self=true;if(ratio<1){old.errors++;old.wrong=true;old.streak=0;}else{old.streak++;if(old.streak>=2)old.wrong=false;}state.reviewRecords[q.id]=old;state.history.push({id:q.id,at:Date.now(),ratio,self:true,review:true});return;}
+ if(q.status==='review'){state.reviewRecords||={};const old=state.reviewRecords[q.id]||{attempts:0,firstAt:Date.now(),first:null,wrong:false,streak:0,errors:0};if(!validRatio(old.first)&&validRatio(ratio))old.first=ratio;old.attempts++;old.last=Date.now();old.ratio=ratio;old.self=true;if(ratio<1){old.errors++;old.wrong=true;old.streak=0;}else{old.streak++;if(old.streak>=2)old.wrong=false;}state.reviewRecords[q.id]=old;state.history.push({id:q.id,at:Date.now(),ratio,self:true,review:true});return;}
  const old=state.records[q.id]||{attempts:0,firstAt:Date.now(),first:null,wrong:false,streak:0,errors:0};
  old.attempts++;old.last=Date.now();old.ratio=ratio;old.self=self;
  if(old.first===null&&!self&&objective(q))old.first=ratio;
@@ -112,15 +136,14 @@ function nextPractice(session,questions,rng=Math.random){
  return {finished:false,completed,chapter:sequential&&before?.topic!==after?.topic?after?.topic:null};
 }
 function learningInsights(bank,state){
- const all=bank.filter(q=>q.status==='active');
+ const stats=assessmentStats(bank,state),all=stats.pool;
  const topics=topicList(state).filter(t=>all.some(q=>q.topic===t)).map(topic=>{
-  const qs=all.filter(q=>q.topic===topic&&objective(q));
-  const attempted=qs.filter(q=>typeof state.records[q.id]?.first==='number');
-  const sum=attempted.reduce((n,q)=>n+(state.records[q.id].ratio??state.records[q.id].first),0);
-  return {topic,n:attempted.length,total:qs.length,accuracy:attempted.length?Math.round(sum/attempted.length*100):null,wrong:qs.filter(q=>state.records[q.id]?.wrong).length};
+  const qs=all.filter(q=>q.topic===topic),attempted=stats.samples.filter(s=>s.q.topic===topic);
+  const sum=attempted.reduce((n,s)=>n+(validRatio(s.record.ratio)?s.record.ratio:s.first),0);
+  return {topic,n:attempted.length,total:qs.length,accuracy:attempted.length?Math.round(sum/attempted.length*100):null,wrong:qs.filter(q=>practiceRecord(state,q)?.wrong).length};
  });
  const weak=topics.filter(t=>t.n>0&&(t.accuracy<80||t.wrong>0)).sort((a,b)=>a.accuracy-b.accuracy||b.wrong-a.wrong);
- const mistakes=all.filter(q=>objective(q)&&state.records[q.id]?.wrong).sort((a,b)=>state.records[b.id].errors-state.records[a.id].errors).slice(0,5);
+ const mistakes=all.filter(q=>practiceRecord(state,q)?.wrong).sort((a,b)=>practiceRecord(state,b).errors-practiceRecord(state,a).errors).slice(0,5);
  return {topics,weak,untested:topics.filter(t=>t.n<3),mistakes};
 }
 function makeExam(bank,plan,minutes,rng=Math.random,config={}){
@@ -188,8 +211,8 @@ function parseText(text){
 function betaBinomial(n,a,b){let p=1;for(let j=0;j<n;j++)p*=(b+j)/(a+b+j);const out=[p];for(let k=0;k<n;k++){p*=((n-k)/(k+1))*((a+k)/(b+n-k-1));out.push(p);}return out;}
 function prediction(bank,state){
  const scope=selectedTopics(bank,state);bank=bank.filter(q=>scope.includes(q.topic));
- const records=bank.filter(q=>q.status==='active'&&objective(q)&&state.records[q.id]?.first!==null&&state.records[q.id]?.first!==undefined);
- const topics=scope.map(topic=>{const rows=records.filter(q=>q.topic===topic);const s=rows.reduce((n,q)=>n+state.records[q.id].first,0);return {topic,n:rows.length,a:2+s,b:2+rows.length-s};});
+ const stats=assessmentStats(bank,state),records=stats.samples;
+ const topics=scope.map(topic=>{const rows=records.filter(row=>row.q.topic===topic);const s=rows.reduce((n,row)=>n+row.first,0);return {topic,n:rows.length,a:2+s,b:2+rows.length-s};});
  const enoughSamples=records.length>=30&&topics.length>0&&topics.every(x=>x.n>=3);
  // Estimate only objective knowledge; subjective score is a transparent scenario.
  const autoPoints=state.settings.plan.filter(r=>['single','multiple','judge','fill'].includes(r.type)).reduce((n,r)=>n+r.count*r.points,0);
@@ -198,9 +221,9 @@ function prediction(bank,state){
  topics.forEach(t=>{const d=betaBinomial(perTopic,t.a,t.b),next=Array(dist.length+d.length-1).fill(0);dist.forEach((p,i)=>d.forEach((v,j)=>next[i+j]+=p*v));dist=next;});
  const required=Math.ceil((state.settings.pass-assumed)/Math.max(autoPoints,.01)*slots-1e-9);
  const p=required<=0?1:required>slots?0:dist.slice(required).reduce((a,b)=>a+b,0);
- const configured=state.settings.scopeExplicit===true&&scope.length>0&&bank.some(q=>q.status==='active')&&state.settings.plan.every(r=>Number.isInteger(r.count)&&r.count>=0&&Number.isFinite(r.points)&&r.points>0)&&Math.abs(autoPoints+subjectivePoints-state.settings.total)<.001&&state.settings.pass>=0&&state.settings.pass<=state.settings.total;
- return {configured,ready:configured&&enoughSamples,n:records.length,topics,probability:Math.round(p*100),assumed,autoPoints,subjectivePoints,expected:topics.reduce((s,t)=>s+t.a/(t.a+t.b),0)/Math.max(topics.length,1)*autoPoints+assumed};
+ const configured=state.settings.scopeExplicit===true&&scope.length>0&&stats.pool.length>0&&state.settings.plan.every(r=>Number.isInteger(r.count)&&r.count>=0&&Number.isFinite(r.points)&&r.points>0)&&Math.abs(autoPoints+subjectivePoints-state.settings.total)<.001&&state.settings.pass>=0&&state.settings.pass<=state.settings.total;
+ return {configured,ready:configured&&enoughSamples,n:records.length,safeN:stats.safeN,reviewN:stats.reviewN,includeReview:stats.includeReview,topics,probability:Math.round(p*100),assumed,autoPoints,subjectivePoints,expected:topics.reduce((s,t)=>s+t.a/(t.a+t.b),0)/Math.max(topics.length,1)*autoPoints+assumed};
 }
-const api={questionPool,practiceRecord,metrics,localDate,dateAfter,dailyPlan,deleteQuestions,autoScored,canonicalTopic,validChapter,topicList,migrate,visibleBank,syncSeed,clearBank,clearTopics,selectedTopics,GRADUATE_PLAN,TOPICS,TYPES,DEFAULT_PLAN,objective,norm,grade,empty,record,shuffle,practiceOrder,nextPractice,learningInsights,makeExam,validateBank,parseCSV,parseText,betaBinomial,prediction,hash};
+const api={assessmentPool,assessmentStats,reviseSelfScore,questionPool,practiceRecord,metrics,localDate,dateAfter,dailyPlan,deleteQuestions,autoScored,canonicalTopic,validChapter,topicList,migrate,visibleBank,syncSeed,clearBank,clearTopics,selectedTopics,GRADUATE_PLAN,TOPICS,TYPES,DEFAULT_PLAN,objective,norm,grade,empty,record,shuffle,practiceOrder,nextPractice,learningInsights,makeExam,validateBank,parseCSV,parseText,betaBinomial,prediction,hash};
 if(typeof module!=='undefined')module.exports=api;else root.Engine=api;
 })(typeof window!=='undefined'?window:globalThis);
