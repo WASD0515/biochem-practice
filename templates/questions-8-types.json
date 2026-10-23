@@ -1,0 +1,169 @@
+{
+  "version": "template-1.4.0",
+  "chapters": [],
+  "questions": [
+    {
+      "id": "template-single-001",
+      "topic": "氨基酸、肽和蛋白质",
+      "type": "single",
+      "stem": "下列哪种氨基酸的侧链含咪唑基？",
+      "options": [
+        {
+          "key": "A",
+          "text": "组氨酸"
+        },
+        {
+          "key": "B",
+          "text": "甘氨酸"
+        },
+        {
+          "key": "C",
+          "text": "丙氨酸"
+        },
+        {
+          "key": "D",
+          "text": "缬氨酸"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "explanation": "组氨酸的侧链含咪唑基。",
+      "source": "规范导入模板示例",
+      "status": "active"
+    },
+    {
+      "id": "template-multiple-001",
+      "topic": "氨基酸、肽和蛋白质",
+      "type": "multiple",
+      "stem": "下列哪些属于含硫氨基酸？",
+      "options": [
+        {
+          "key": "A",
+          "text": "半胱氨酸"
+        },
+        {
+          "key": "B",
+          "text": "甲硫氨酸"
+        },
+        {
+          "key": "C",
+          "text": "甘氨酸"
+        },
+        {
+          "key": "D",
+          "text": "丙氨酸"
+        }
+      ],
+      "answer": [
+        "A",
+        "B"
+      ],
+      "explanation": "半胱氨酸和甲硫氨酸的侧链含硫；甲硫氨酸也称蛋氨酸。",
+      "source": "规范导入模板示例",
+      "status": "active"
+    },
+    {
+      "id": "template-judge-001",
+      "topic": "氨基酸、肽和蛋白质",
+      "type": "judge",
+      "stem": "甘氨酸的α碳原子不是手性碳。",
+      "options": [
+        {
+          "key": "A",
+          "text": "正确"
+        },
+        {
+          "key": "B",
+          "text": "错误"
+        }
+      ],
+      "answer": [
+        "A"
+      ],
+      "explanation": "甘氨酸的α碳原子连接两个氢原子，因此不是手性碳。",
+      "source": "规范导入模板示例",
+      "status": "active"
+    },
+    {
+      "id": "template-fill-001",
+      "topic": "维生素和辅酶",
+      "type": "fill",
+      "stem": "维生素B1的活性形式是____；维生素B2可参与形成的两种辅酶是____和____。",
+      "options": [],
+      "answer": [
+        [
+          "TPP",
+          "硫胺素焦磷酸",
+          "焦磷酸硫胺素"
+        ],
+        [
+          "FMN",
+          "黄素单核苷酸"
+        ],
+        [
+          "FAD",
+          "黄素腺嘌呤二核苷酸"
+        ]
+      ],
+      "explanation": "每个内层数组对应一空，同一数组内为可接受的同义表达；本例第二、三空按给定顺序判定。",
+      "source": "规范导入模板示例",
+      "status": "active"
+    },
+    {
+      "id": "template-definition-001",
+      "topic": "酶的催化作用",
+      "type": "definition",
+      "stem": "解释酶的活性中心。",
+      "options": [],
+      "answer": [
+        "酶分子中与底物结合并直接参与催化反应的特定空间区域，通常包含结合底物和执行催化作用的相关基团。"
+      ],
+      "explanation": "对照参考要点自评，不进行自动语义判分。",
+      "source": "规范导入模板示例",
+      "status": "active"
+    },
+    {
+      "id": "template-short-001",
+      "topic": "蛋白质的性质、分离纯化和鉴定",
+      "type": "short",
+      "stem": "简述凝胶过滤层析分离蛋白质的主要依据及一般洗脱顺序。",
+      "options": [],
+      "answer": [
+        "主要根据分子水动力学体积的差异分离。较大分子较少进入凝胶孔隙，通常先洗脱；较小分子进入更多孔隙，通常后洗脱。"
+      ],
+      "explanation": "可根据分离依据、孔隙进入程度和洗脱顺序三个要点评分。",
+      "source": "规范导入模板示例",
+      "status": "active"
+    },
+    {
+      "id": "template-essay-001",
+      "topic": "酶动力学",
+      "type": "essay",
+      "stem": "论述底物浓度、酶浓度、温度和pH对酶促反应初速度的影响。",
+      "options": [],
+      "answer": [
+        "对符合米氏动力学的反应，在其他条件固定时，初速度随底物浓度升高而增加，并逐渐接近最大反应速度。",
+        "底物充足且其他条件适宜时，初速度通常与酶浓度成正比。",
+        "温度可影响反应速率及酶的稳定性，过高温度可能导致失活；适宜温度与具体酶及测定条件有关。",
+        "pH可影响相关基团的解离状态及酶的构象，不同酶具有不同的适宜pH范围。"
+      ],
+      "explanation": "主观题支持多个参考要点，交卷后或练习中由学生对照自评。",
+      "source": "规范导入模板示例",
+      "status": "active"
+    },
+    {
+      "id": "template-flashcard-001",
+      "topic": "氨基酸、肽和蛋白质",
+      "type": "flashcard",
+      "stem": "回忆三种通常归为碱性侧链氨基酸的名称。",
+      "options": [],
+      "answer": [
+        "赖氨酸、精氨酸、组氨酸。"
+      ],
+      "explanation": "记忆卡用于回忆与自评，不自动判断自由文字答案。",
+      "source": "规范导入模板示例",
+      "status": "active"
+    }
+  ]
+}
