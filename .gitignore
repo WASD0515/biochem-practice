@@ -1,0 +1,11 @@
+node_modules/
+release/
+build-tools/
+native/android/build/
+*.keystore
+*.jks
+*.p12
+*.pem
+.env
+.env.*
+.DS_Store
