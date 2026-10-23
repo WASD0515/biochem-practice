@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "versions": [
+    {
+      "id": "biochem-v5",
+      "title": "生物化学题库·风险修复第五版",
+      "description": "2433题：安全429、待确认2004；114题归入其他章节。与App 1.4.0内置题库一致。待确认题需开启开关参考练习，不进入可信通过概率。",
+      "files": [
+        "biochem-v5/questions.json"
+      ]
+    }
+  ]
+}
