@@ -18,7 +18,7 @@ const managedQuestionIds=[...new Set([...(previous.managedQuestionIds||[]),...(p
 const currentIds=new Set(questions.map(q=>q.id));
 const changedQuestionIds=[...new Set([...(previous.changedQuestionIds||[]),...questions.filter(q=>oldMap.has(q.id)&&signature(q)!==signature(oldMap.get(q.id))).map(q=>q.id)])].filter(id=>currentIds.has(id));
 const questionHashes=Object.fromEntries(questions.map(q=>[q.id,signature(q)]));
-const bank={version:source.version+'-app-1',revision:crypto.createHash('sha256').update(JSON.stringify(questions)).digest('hex'),title:'生物化学题库（风险修复第五版）',chapters:['其他章节'],chapterCatalog:E.TOPICS,sources:[path.basename(input),path.basename(report)],replacesQuestionIds:[...new Set([...(previous.replacesQuestionIds||[]),...removedIds])],managedQuestionIds,changedQuestionIds,questionHashes,note:'采用老师整理的风险修复第五版，保留原答案和安全/待确认状态。安全题可自动判分；开启待确认题后可参考作答、自评，相关记录不计入可信通过概率。',questions};
+const bank={version:source.version+'-app-1',revision:crypto.createHash('sha256').update(JSON.stringify(questions)).digest('hex'),title:'生物化学题库（风险修复第五版）',chapters:['其他章节'],chapterCatalog:E.TOPICS,sources:[path.basename(input),path.basename(report)],replacesQuestionIds:[...new Set([...(previous.replacesQuestionIds||[]),...removedIds])],managedQuestionIds,changedQuestionIds,questionHashes,note:'采用老师整理的风险修复第五版，保留原答案和安全/待确认状态。安全题可自动判分；待确认题可参考作答、自评，是否纳入正确率与通过概率由独立统计开关决定，默认关闭。',questions};
 const checked=E.validateBank(bank);if(checked.errors.length)throw Error(checked.errors.slice(0,10).join('\n'));
 fs.writeFileSync(path.join(root,'dist/question-bank.json'),JSON.stringify(bank,null,2)+'\n');fs.writeFileSync(path.join(root,'dist/bank.js'),'window.SEED_BANK='+JSON.stringify(bank)+';\n');
 fs.mkdirSync(path.join(root,'release'),{recursive:true});
