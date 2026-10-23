@@ -1,0 +1,18 @@
+{
+  "tag_name": "v1.5.0",
+  "html_url": "https://github.com/WASD0515/biochem-practice/releases/tag/v1.5.0",
+  "body": "生化练习室1.5.0：新增待确认统计独立开关与软件更新检查。\n\n默认仅安全客观题统计；可开启将待确认题的首次自评纳入综合首次得分率、通过概率和薄弱点，支持旧记录迁移，关闭后恢复安全口径而保留数据。\n\n设置中新增检查更新、启动时检查、版本说明和安卓/Windows对应下载入口，使用系统浏览器手动安装。\n\n完整题库仍为2433题（安全429、待确认2004）。升级前建议导出学习备份。模型未经真实成绩校准，含待确认自评时会明确标注。",
+  "draft": false,
+  "prerelease": false,
+  "published_at": "2026-10-23T19:42:54.289169+00:00",
+  "assets": [
+    {
+      "name": "Biochem-Practice-1.5.0.apk",
+      "browser_download_url": "https://github.com/WASD0515/biochem-practice/releases/download/v1.5.0/Biochem-Practice-1.5.0.apk"
+    },
+    {
+      "name": "Biochem-Practice-Setup-1.5.0-x64.exe",
+      "browser_download_url": "https://github.com/WASD0515/biochem-practice/releases/download/v1.5.0/Biochem-Practice-Setup-1.5.0-x64.exe"
+    }
+  ]
+}
