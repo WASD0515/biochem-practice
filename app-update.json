@@ -1,18 +1,22 @@
 {
-  "tag_name": "v1.5.0",
-  "html_url": "https://github.com/WASD0515/biochem-practice/releases/tag/v1.5.0",
-  "body": "生化练习室1.5.0：新增待确认统计独立开关与软件更新检查。\n\n默认仅安全客观题统计；可开启将待确认题的首次自评纳入综合首次得分率、通过概率和薄弱点，支持旧记录迁移，关闭后恢复安全口径而保留数据。\n\n设置中新增检查更新、启动时检查、版本说明和安卓/Windows对应下载入口，使用系统浏览器手动安装。\n\n完整题库仍为2433题（安全429、待确认2004）。升级前建议导出学习备份。模型未经真实成绩校准，含待确认自评时会明确标注。",
+  "tag_name": "v1.6.0",
+  "html_url": "https://github.com/WASD0515/biochem-practice/releases/tag/v1.6.0",
+  "body": "# 生化练习室 1.6.0\n\n新增 iPhone/iPad 主屏幕安装版，以及 macOS 12.3+ 通用应用（Apple 芯片 + Intel）。保留1.5.0的待确认练习和统计独立开关，全部2433题及原有练习、错题、模拟、评估、导入功能。\n\niPhone 使用 Safari 打开 https://wasd0515.github.io/biochem-practice/dist/ → 分享 → 添加到主屏幕；首次联网等待“离线已就绪”。网页可离线重开，显式确认更新，考试中先交卷。iPhone 导出优先使用系统文件分享。此为 PWA，无需开发者账号或 App Store，不是 IPA。\n\nMac 下载 mac-universal.dmg 拖入 Applications，内置题库、系统文件选择与备份保存、教师文件夹监测、对应 Mac 包更新检查。尚无 Developer ID 签名及苹果公证；可能受系统安全策略限制。\n\n同步提供新版安卓APK、Windows x64 EXE、完整源码、教师模板/AI资料与题库JSON。升级前请导出学习备份，各平台和网页数据独立，不会自动同步。\n",
   "draft": false,
   "prerelease": false,
-  "published_at": "2026-10-23T19:42:54.289169+00:00",
+  "published_at": "2026-10-24T09:02:43.891887+00:00",
   "assets": [
     {
-      "name": "Biochem-Practice-1.5.0.apk",
-      "browser_download_url": "https://github.com/WASD0515/biochem-practice/releases/download/v1.5.0/Biochem-Practice-1.5.0.apk"
+      "name": "Biochem-Practice-1.6.0.apk",
+      "browser_download_url": "https://github.com/WASD0515/biochem-practice/releases/download/v1.6.0/Biochem-Practice-1.6.0.apk"
     },
     {
-      "name": "Biochem-Practice-Setup-1.5.0-x64.exe",
-      "browser_download_url": "https://github.com/WASD0515/biochem-practice/releases/download/v1.5.0/Biochem-Practice-Setup-1.5.0-x64.exe"
+      "name": "Biochem-Practice-Setup-1.6.0-x64.exe",
+      "browser_download_url": "https://github.com/WASD0515/biochem-practice/releases/download/v1.6.0/Biochem-Practice-Setup-1.6.0-x64.exe"
+    },
+    {
+      "name": "Biochem-Practice-1.6.0-mac-universal.dmg",
+      "browser_download_url": "https://github.com/WASD0515/biochem-practice/releases/download/v1.6.0/Biochem-Practice-1.6.0-mac-universal.dmg"
     }
   ]
 }
