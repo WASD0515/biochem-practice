@@ -1,5 +1,6 @@
 const {contextBridge,ipcRenderer}=require('electron');
 contextBridge.exposeInMainWorld('DesktopBridge',{
+ platform:process.platform,
  saveFile:(name,type,content)=>ipcRenderer.invoke('save-file',{name,type,content}),
  watchFolder:()=>ipcRenderer.invoke('watch-folder'),
  openExternal:url=>ipcRenderer.invoke('open-update-url',url),

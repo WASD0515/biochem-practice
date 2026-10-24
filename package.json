@@ -1,13 +1,14 @@
 {
   "name": "biochem-practice",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "description": "生物化学练习室",
   "author": "Biochem Classroom",
   "main": "native/windows/main.cjs",
   "private": true,
   "scripts": {
     "test": "node tools/test.cjs",
-    "build:win": "electron-builder --win nsis --x64 --publish never"
+    "build:win": "electron-builder --win nsis --x64 --publish never",
+    "build:mac": "python3 tools/build_macos.py"
   },
   "devDependencies": {
     "electron": "^42.0.0",

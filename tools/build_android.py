@@ -16,7 +16,7 @@ key=Path(os.environ['BIOCHEM_KEYSTORE']);alias=os.environ['BIOCHEM_KEY_ALIAS']
 if not key.is_file():raise SystemExit('BIOCHEM_KEYSTORE must point to an existing private signing key')
 for required in ['BIOCHEM_STORE_PASSWORD','BIOCHEM_KEY_PASSWORD']:
  if not os.environ.get(required):raise SystemExit('Missing '+required)
-out=R/'release/android/Biochem-Practice-1.5.0.apk';out.parent.mkdir(parents=True,exist_ok=True)
+out=R/'release/android/Biochem-Practice-1.6.0.apk';out.parent.mkdir(parents=True,exist_ok=True)
 run(tools/'apksigner','sign','--ks',key,'--ks-key-alias',alias,'--ks-pass','env:BIOCHEM_STORE_PASSWORD','--key-pass','env:BIOCHEM_KEY_PASSWORD','--out',out,B/'aligned.apk')
 run(tools/'apksigner','verify','--verbose',out);run(tools/'aapt2','dump','badging',out)
 print('Built:',out)

@@ -1,0 +1,11 @@
+exclude:
+  - native
+  - tools
+  - source-data
+  - docs
+  - data
+  - ai
+  - templates
+  - package.json
+  - pnpm-lock.yaml
+  - README.md
