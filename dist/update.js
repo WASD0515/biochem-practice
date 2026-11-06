@@ -1,6 +1,6 @@
 (function(root){
 'use strict';
-const VERSION='1.6.0',REPOSITORY='WASD0515/biochem-practice',RELEASES='https://github.com/'+REPOSITORY+'/releases',API='https://api.github.com/repos/'+REPOSITORY+'/releases/latest',FEED='https://raw.githubusercontent.com/'+REPOSITORY+'/main/app-update.json';
+const VERSION='1.7.0',REPOSITORY='WASD0515/biochem-practice',RELEASES='https://github.com/'+REPOSITORY+'/releases',API='https://api.github.com/repos/'+REPOSITORY+'/releases/latest',FEED='https://raw.githubusercontent.com/'+REPOSITORY+'/main/app-update.json';
 function versionParts(value){const match=/^v?(\d+)\.(\d+)\.(\d+)$/.exec(String(value));if(!match||match.slice(1).some(x=>!Number.isSafeInteger(Number(x))))throw Error('版本号格式无效');return match.slice(1).map(Number);}
 function compare(a,b){const av=versionParts(a),bv=versionParts(b);for(let i=0;i<3;i++)if(av[i]!==bv[i])return av[i]>bv[i]?1:-1;return 0;}
 function allowedURL(value){try{const u=new URL(value);return u.protocol==='https:'&&u.hostname==='github.com'&&!u.port&&!u.username&&!u.password&&(u.pathname==='/'+REPOSITORY+'/releases'||u.pathname.startsWith('/'+REPOSITORY+'/releases/'));}catch(_){return false;}}

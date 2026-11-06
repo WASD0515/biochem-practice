@@ -9,13 +9,13 @@ const server=http.createServer((req,res)=>{
  fs.readFile(file,(error,data)=>{if(error)return res.writeHead(404).end();
   res.setHeader('Content-Type',({'.js':'text/javascript','.css':'text/css','.json':'application/json','.webmanifest':'application/manifest+json','.png':'image/png','.svg':'image/svg+xml'})[path.extname(file)]||'text/html');
   res.setHeader('Cache-Control','no-cache');
-  if(file.endsWith('/sw.js')&&revision)data=Buffer.from(data.toString().replace("CACHE=PREFIX+'1.6.0'","CACHE=PREFIX+'1.6.1'"));
+  if(file.endsWith('/sw.js')&&revision)data=Buffer.from(data.toString().replace("CACHE=PREFIX+'1.7.0'","CACHE=PREFIX+'1.7.1'"));
   res.end(data);
  });
 });
 (async()=>{fs.mkdirSync(path.resolve(__dirname,'../release'),{recursive:true});
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
- const browser=await chromium.launch({headless:true});
+ const browser=await chromium.launch({headless:true,...(process.env.BIOCHEM_CHROME?{executablePath:process.env.BIOCHEM_CHROME}:{})});
  const c=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1'}),p=await c.newPage(),errors=[];
  p.on('pageerror',error=>errors.push(error.message));
  await c.route(/https:\/\/(?:raw.githubusercontent.com|api.github.com)\//,route=>route.abort());
@@ -45,7 +45,7 @@ const server=http.createServer((req,res)=>{
   assert((await p.locator('#toast').innerText()).includes('先交卷'));
   await p.locator('[data-testid="submit-exam-now"]').click();await p.locator('[data-action="confirm-exam"]').click();
   await p.evaluate(()=>nav('settings'));await p.locator('[data-action="apply-web-update"]').click();
-  await p.waitForFunction(async()=>navigator.serviceWorker.controller&&(await caches.keys()).some(k=>k.endsWith(':1.6.1')));
+  await p.waitForFunction(async()=>navigator.serviceWorker.controller&&(await caches.keys()).some(k=>k.endsWith(':1.7.1')));
   await p.waitForFunction(()=>typeof state!=='undefined'&&state.exam?.graded);
   assert.equal(await p.evaluate(()=>Object.keys(state.records).length),1);
   assert((await p.evaluate(()=>caches.keys())).includes('another-app-cache'),'another app cache survives');
@@ -56,7 +56,7 @@ const server=http.createServer((req,res)=>{
   for(const size of [{width:320,height:568},{width:844,height:390},{width:1024,height:768}]){
    await p.setViewportSize(size);await p.evaluate(()=>nav('home'));assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
   }
-  const future='1.7.0',name=`Biochem-Practice-${future}-mac-universal.dmg`,asset=U.RELEASES+`/download/v${future}/`+name;
+  const future='2.0.0',name=`Biochem-Practice-${future}-mac-universal.dmg`,asset=U.RELEASES+`/download/v${future}/`+name;
   assert.equal(U.parseRelease({tag_name:'v'+future,html_url:U.RELEASES+'/tag/v'+future,assets:[{name,browser_download_url:asset}]}).assets.macos,asset);
   assert.equal(U.parseRelease({tag_name:'v'+future,html_url:U.RELEASES+'/tag/v'+future,assets:[{name,browser_download_url:'https://evil.example/'+name}]}).assets.macos,undefined);
   assert.deepEqual(errors,[]);

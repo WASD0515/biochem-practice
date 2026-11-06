@@ -31,3 +31,5 @@ async function catalogTests(){const index={schemaVersion:1,versions:[{id:'v1',ti
 catalogTests().catch(e=>{console.error(e);process.exitCode=1;});
 
 require('./test-150.cjs');
+
+require('./test-170.cjs');

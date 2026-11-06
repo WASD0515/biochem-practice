@@ -6,9 +6,9 @@ const server=http.createServer((req,res)=>{let file=path.join(root,decodeURIComp
 fs.mkdirSync('release',{recursive:true});
 (async()=>{
  await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const url=`http://127.0.0.1:${server.address().port}`;
- const browser=await chromium.launch({headless:true});const errors=[];
+ const browser=await chromium.launch({headless:true,...(process.env.BIOCHEM_CHROME?{executablePath:process.env.BIOCHEM_CHROME}:{})});const errors=[];
  const context=await browser.newContext({viewport:{width:390,height:844},serviceWorkers:'block'}),p=await context.newPage();p.on('pageerror',e=>errors.push(e.message));
- const nav=async name=>p.locator(`#nav [data-page="${name}"]`).click();
+ const nav=async name=>{await p.locator(`#nav [data-page="${name}"]`).click();if(name==='practice')await p.locator('[data-action="specialty-view"][data-view="chapters"]').first().click();};
  const homeCount=async count=>{await nav('home');assert((await p.locator('.stat').first().innerText()).includes('/ '+count+' 题可练'));assert((await p.locator('.infinite-modes').innerText()).includes('当前共 '+count+' 题'));};
  const setScope=async chapters=>{await nav('home');await p.locator('[data-action="evaluation-scope"]').click();await p.locator('[data-action="evaluation-none"]').click();for(const topic of chapters)await p.locator(`[data-evaluation-topic="${topic}"]`).check();await p.locator('[data-action="save-evaluation-scope"]').click();};
  const unrestricted=async()=>{await nav('home');await p.locator('[data-action="evaluation-scope"]').click();await p.locator('[data-action="evaluation-unrestricted"]').click();};

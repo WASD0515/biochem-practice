@@ -151,7 +151,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, WKNavigationDelegate, 
             persistedAcrossLaunch: before === 'persistent', title: document.title,
             updateTarget: AppPlatform.downloadTarget({macos: 'mac.dmg', windows: 'win.exe'}).url};
           nav('settings'); result.settings = document.querySelector('#content').innerText.includes('macOS');
-          nav('practice'); result.chapters = document.querySelectorAll('[data-topic]').length;
+          nav('practice'); openSpecialty('chapters'); result.chapters = document.querySelectorAll('[data-topic]').length;
           nav('home'); return result;
         })()
         """) { [weak self] value, error in
